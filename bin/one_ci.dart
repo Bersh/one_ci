@@ -1,19 +1,28 @@
 import 'dart:io';
 
-import 'package:one_ci/github.dart';
+import 'package:one_ci/repo_type.dart';
 
 const String branchMaster = 'master';
 const String branchMain = 'main';
 
 void main(List<String> arguments) async {
-  await Directory('.github/workflows').create(recursive: true);
-  File ciFile = File('.github/workflows/ci.yaml');
+  RepoType repoType = arguments.isEmpty || arguments[0] == 'github'
+      ? RepoType.github
+      : RepoType.gitlab;
+  print(repoType);
+
   String mainBranch = await getMainBranch();
   print(mainBranch);
+
+  if (repoType == RepoType.github) {
+    await Directory('.github/workflows').create(recursive: true);
+  }
+  File ciFile = repoType.ciFile;
+
   if (ciFile.existsSync()) {
     print('CI file exists');
   } else {
-    ciFile.writeAsString(Github.getCiString(mainBranch));
+    ciFile.writeAsString(repoType.getCiString(mainBranch));
   }
 }
 
