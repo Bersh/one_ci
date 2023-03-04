@@ -20,7 +20,7 @@ void main(List<String> arguments) async {
   File ciFile = repoType.ciFile;
 
   if (ciFile.existsSync()) {
-    print('CI file exists');
+    print('Error: CI file exists');
   } else {
     ciFile.writeAsString(repoType.getCiString(mainBranch));
   }
