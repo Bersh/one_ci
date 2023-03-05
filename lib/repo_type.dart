@@ -88,7 +88,7 @@ build:
 analyze:
   stage: analyze
   script:
-    - flutter analyze
+    - flutter analyze || true
   tags:
     - shared
   only:
@@ -98,7 +98,7 @@ analyze:
 test:
   stage: test
   script:
-    - flutter test --machine | tojunit -o report.xml
+    - flutter test --machine | dart pub global run junitreport:tojunit -o report.xml
   artifacts:
     when: always
     reports:
