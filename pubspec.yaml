@@ -1,7 +1,7 @@
 name: one_ci
 description: A command-line tool which simplifies the task of creating CI config for Flutter project
 version: 0.0.1
-homepage:
+repository: https://github.com/Bersh/one_ci
 
 environment:
   sdk: '>=2.19.2 <3.0.0'

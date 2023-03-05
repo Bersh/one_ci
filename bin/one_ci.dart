@@ -9,10 +9,8 @@ void main(List<String> arguments) async {
   RepoType repoType = arguments.isEmpty || arguments[0] == 'github'
       ? RepoType.github
       : RepoType.gitlab;
-  print(repoType);
 
   String mainBranch = await getMainBranch();
-  print(mainBranch);
 
   if (repoType == RepoType.github) {
     await Directory('.github/workflows').create(recursive: true);
@@ -20,9 +18,10 @@ void main(List<String> arguments) async {
   File ciFile = repoType.ciFile;
 
   if (ciFile.existsSync()) {
-    print('Error: CI file exists');
+    printDebugInfo('Error: CI file exists');
   } else {
     ciFile.writeAsString(repoType.getCiString(mainBranch));
+    printDebugInfo('CI config created');
   }
 }
 
@@ -35,4 +34,8 @@ Future<String> getMainBranch() async {
     return branchMain;
   }
   throw Exception('Main branch not found');
+}
+
+void printDebugInfo(String line) {
+  print(line);
 }

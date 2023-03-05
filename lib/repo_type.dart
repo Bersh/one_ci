@@ -1,7 +1,5 @@
 import 'dart:io';
 
-import 'package:flutter/foundation.dart';
-
 enum RepoType { github, gitlab }
 
 const String githubCiString = '''
@@ -61,23 +59,21 @@ jobs:
 const String gitlabCiString = '''
 image: cirrusci/flutter:3.7.5
 
-variables:
-
 # Cache downloaded dependencies and plugins between builds.
 cache:
-  key: "\$CI_JOB_NAME"'
+  key: "\$CI_JOB_NAME"
   paths:
     - .pub-cache/global_packages
 
 stages:
   - build
-  - analyze_and_test
+  - analyze
+  - test
 
 before_script:
   - export PATH="\$PATH":"\$HOME/.flutter-sdk/.pub-cache/bin"
   - flutter pub get
   - flutter pub global activate junitreport
-  
 
 build:
   stage: build
@@ -86,13 +82,22 @@ build:
   tags:
     - shared
   only:
-    - :branch:
+    - main
     - merge_requests
 
-analyze_and_test:
-  stage: analyze_and_test
+analyze:
+  stage: analyze
   script:
     - flutter analyze
+  tags:
+    - shared
+  only:
+    - main
+    - merge_requests
+
+test:
+  stage: test
+  script:
     - flutter test --machine | tojunit -o report.xml
   artifacts:
     when: always
@@ -102,12 +107,19 @@ analyze_and_test:
   tags:
     - shared
   only:
-    - :branch:
+    - main
     - merge_requests
     ''';
 
 extension RepoTypeExtension on RepoType {
-  String get name => describeEnum(this);
+  String get name {
+    switch (this) {
+      case RepoType.github:
+        return 'github';
+      case RepoType.gitlab:
+        return 'gitlab';
+    }
+  }
 
   String getCiString(String branchName) {
     switch (this) {
@@ -123,7 +135,7 @@ extension RepoTypeExtension on RepoType {
       case RepoType.github:
         return File('.github/workflows/ci.yaml');
       case RepoType.gitlab:
-        return File('gitlab-ci.yaml');
+        return File('.gitlab-ci.yml');
     }
   }
 }
