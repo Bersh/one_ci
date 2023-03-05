@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:one_ci/repo_type.dart';
+import 'package:one_ci/one_ci.dart';
 
 const String branchMaster = 'master';
 const String branchMain = 'main';
